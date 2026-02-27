@@ -362,7 +362,7 @@ h2 {
   line-height: 1;
 }
 
-.service-card__icon--pawn {
+.service-card__icon--buyback {
   color: var(--rust);
   background: #f8ece8;
   border-color: #e8c7bc;
@@ -386,7 +386,7 @@ h2 {
   font-weight: 700;
 }
 
-.service-badge--pawn::part(base) {
+.service-badge--buyback::part(base) {
   background: var(--rust);
 }
 
