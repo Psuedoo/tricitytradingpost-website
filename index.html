@@ -345,7 +345,13 @@
               >
             </p>
           </div>
-          <form class="card form" action="#" method="post">
+          <form
+            class="card form"
+            id="contact-form"
+            action="#"
+            method="post"
+            data-sheet-endpoint="https://script.google.com/macros/s/AKfycbzPUcncgmTOctrwPimTb1tCN5gsWxq0RkqjrUEryZ5uoW_D7YjevfGmSAKSueiU-L1-/exec"
+          >
             <label for="name">Name</label>
             <input id="name" name="name" type="text" required />
 
@@ -355,7 +361,22 @@
             <label for="message">Message</label>
             <textarea id="message" name="message" rows="4" required></textarea>
 
+            <input
+              type="text"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+              class="form-honeypot"
+              aria-hidden="true"
+            />
+
             <button type="submit" class="btn btn--solid">Send Message</button>
+            <p
+              id="contact-form-status"
+              class="form-status"
+              role="status"
+              aria-live="polite"
+            ></p>
           </form>
         </div>
       </section>
@@ -545,6 +566,62 @@
           nextDayLabel +
           " at " +
           formatMinutes(schedule[nextDay].open);
+      })();
+
+      (function initContactForm() {
+        const form = document.getElementById("contact-form");
+        const statusEl = document.getElementById("contact-form-status");
+        if (!form || !statusEl) return;
+
+        const endpoint = (form.dataset.sheetEndpoint || "").trim();
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        if (!endpoint) {
+          statusEl.textContent =
+            "Contact form is not configured yet. Add the Google Apps Script URL to enable submissions.";
+          statusEl.className = "form-status form-status--error";
+          return;
+        }
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const payload = new FormData(form);
+          payload.append("submittedAt", new Date().toISOString());
+          payload.append("page", window.location.href);
+          payload.append("userAgent", navigator.userAgent);
+
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending...";
+          }
+
+          statusEl.textContent = "Sending message...";
+          statusEl.className = "form-status";
+
+          fetch(endpoint, {
+            method: "POST",
+            mode: "no-cors",
+            body: payload,
+          })
+            .then(function () {
+              form.reset();
+              statusEl.textContent =
+                "Message sent. If needed, we will follow up by email or phone.";
+              statusEl.className = "form-status form-status--success";
+            })
+            .catch(function () {
+              statusEl.textContent =
+                "Unable to send right now. Please call or email us instead.";
+              statusEl.className = "form-status form-status--error";
+            })
+            .finally(function () {
+              if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = "Send Message";
+              }
+            });
+        });
       })();
 
       document.getElementById("copyright").textContent =
