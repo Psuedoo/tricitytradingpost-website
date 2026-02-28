@@ -80,7 +80,7 @@ a {
   inset: 0;
   background:
     linear-gradient(90deg, rgba(8, 8, 8, 0.88) 12%, rgba(8, 8, 8, 0.48) 58%, rgba(75, 83, 32, 0.32) 100%),
-    url("assets/images/hero-watch-face.jpg") center/cover no-repeat;
+    url("assets/images/pexels-dbgalvanis-5769855.jpg") center/cover no-repeat;
   opacity: 0.82;
   pointer-events: none;
 }
