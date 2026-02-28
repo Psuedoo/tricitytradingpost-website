@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build static site bundle
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
@@ -50,6 +52,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number || '' }}
           REF_NAME: ${{ github.ref_name }}
           WORKSPACE: ${{ github.workspace }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
 
@@ -69,33 +72,31 @@ jobs:
 
           touch .nojekyll
 
+          ensure_root_site() {
+            if [ -f index.html ]; then
+              return
+            fi
+
+            bootstrap_dir="$(mktemp -d)"
+            git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- index.html ebay.html styles.css assets
+            cp -R "$bootstrap_dir/." .
+            touch .nojekyll
+          }
+
           if [ "$EVENT_NAME" = "push" ] || [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             find . -mindepth 1 -maxdepth 1 ! -name .git ! -name pr-preview -exec rm -rf {} +
             cp -R "$WORKSPACE/_site/." .
             commit_message="Deploy site from ${REF_NAME}"
           elif [ "$EVENT_ACTION" = "closed" ]; then
+            ensure_root_site
             rm -rf "pr-preview/pr-${PR_NUMBER}"
             commit_message="Remove PR preview #${PR_NUMBER}"
           else
+            ensure_root_site
             preview_dir="pr-preview/pr-${PR_NUMBER}"
             rm -rf "$preview_dir"
             mkdir -p "$preview_dir"
             cp -R "$WORKSPACE/_site/." "$preview_dir/"
-            if [ ! -f index.html ]; then
-              cat > index.html <<EOF
-          <!doctype html>
-          <html lang="en">
-            <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1">
-              <title>Preview Published</title>
-            </head>
-            <body>
-              <p>Preview published at <a href="/${REPOSITORY#*/}/pr-preview/pr-${PR_NUMBER}/">/$(printf '%s' "${REPOSITORY#*/}")/pr-preview/pr-${PR_NUMBER}/</a></p>
-            </body>
-          </html>
-          EOF
-            fi
             commit_message="Deploy PR preview #${PR_NUMBER}"
           fi
 
