@@ -1,14 +1,11 @@
 ﻿:root {
   --ink: #e9e2d0;
   --ink-soft: #b9ab8f;
-  --cream: #e9e2d0;
   --rust: #c2a16b;
   --brass: #7a6a4f;
   --pine: #4b5320;
-  --paper: #141414;
   --line: #4a4338;
   --black: #0f0f0f;
-  --gunmetal: #2b2b2b;
   --canvas: #e9e2d0;
   --shadow: rgba(0, 0, 0, 0.35);
 }
@@ -331,7 +328,7 @@ h2 {
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--rust);
   font-family: "Rajdhani", "Arial Narrow", sans-serif;
 }
@@ -903,7 +900,7 @@ h2 {
 
 .listing-card__price {
   margin: 0;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--rust);
   font-family: "Rajdhani", "Arial Narrow", sans-serif;
   letter-spacing: 0.04em;
