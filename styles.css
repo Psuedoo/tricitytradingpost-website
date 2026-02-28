@@ -677,9 +677,45 @@ h2 {
   color: var(--canvas);
 }
 
+.form input:focus,
+.form textarea:focus {
+  outline: 2px solid rgba(194, 161, 107, 0.35);
+  outline-offset: 1px;
+  border-color: rgba(194, 161, 107, 0.45);
+}
+
+.form-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .form button {
   margin-top: 0.5rem;
   cursor: pointer;
+}
+
+.form button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.form-status {
+  min-height: 1.5rem;
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.form-status--success {
+  color: #217547;
+}
+
+.form-status--error {
+  color: #b44725;
 }
 
 .text-link {
