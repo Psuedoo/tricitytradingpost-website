@@ -621,6 +621,10 @@ h2 {
   min-height: 8rem;
 }
 
+.hours-loading[hidden] {
+  display: none !important;
+}
+
 .hours-panel.is-loading .hours-loading {
   display: flex;
 }
@@ -628,6 +632,15 @@ h2 {
 .hours-panel.is-loading .hours-status,
 .hours-panel.is-loading .hours-list {
   display: none;
+}
+
+.hours-loading__spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 3px solid rgba(31, 74, 69, 0.18);
+  border-top-color: var(--pine);
+  animation: gallery-spin 0.8s linear infinite;
 }
 
 .hours-status {
