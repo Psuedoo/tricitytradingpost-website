@@ -213,14 +213,16 @@
 
       <section class="section shell" id="hours">
         <div
-          class="hours-panel"
+          class="hours-panel is-loading"
           data-hours-endpoint="https://script.google.com/macros/s/AKfycbxvMGhJEGUOvmVa2rKgh9YOL8j795tbqX5OSxvB825qx23s9d_O8s2TJsQ8DWvWAetH/exec"
           data-hours-timezone="America/Detroit"
+          aria-busy="true"
         >
-          <p class="hours-status" id="hours-status">
-            <strong>Closed</strong> Opens Monday at 10:00 AM
-          </p>
           <h2>Business Hours</h2>
+          <div class="hours-loading" aria-hidden="true">
+            <span class="gallery-loading__spinner"></span>
+          </div>
+          <p class="hours-status" id="hours-status"></p>
           <div class="hours-list" id="hours-list"></div>
         </div>
       </section>
@@ -930,6 +932,11 @@
             "<strong>Closed</strong> Check back soon for the next opening time.";
         }
 
+        function setHoursLoadingState(isLoading) {
+          hoursPanel.classList.toggle("is-loading", isLoading);
+          hoursPanel.setAttribute("aria-busy", isLoading ? "true" : "false");
+        }
+
         async function loadRemoteHours() {
           if (!endpoint) {
             throw new Error("Hours endpoint is not configured.");
@@ -960,12 +967,15 @@
         }
 
         (async function initHours() {
+          setHoursLoadingState(true);
           try {
             const liveDays = await loadRemoteHours();
             renderHours(liveDays);
           } catch (error) {
             renderHours(buildFallbackDays());
             console.error("Hours fallback enabled:", error);
+          } finally {
+            setHoursLoadingState(false);
           }
         })();
       })();
