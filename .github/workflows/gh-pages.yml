@@ -67,6 +67,8 @@ jobs:
             git checkout --orphan gh-pages
           fi
 
+          touch .nojekyll
+
           if [ "$EVENT_NAME" = "push" ] || [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             find . -mindepth 1 -maxdepth 1 ! -name .git ! -name pr-preview -exec rm -rf {} +
             cp -R "$WORKSPACE/_site/." .
@@ -79,6 +81,21 @@ jobs:
             rm -rf "$preview_dir"
             mkdir -p "$preview_dir"
             cp -R "$WORKSPACE/_site/." "$preview_dir/"
+            if [ ! -f index.html ]; then
+              cat > index.html <<EOF
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>Preview Published</title>
+            </head>
+            <body>
+              <p>Preview published at <a href="/${REPOSITORY#*/}/pr-preview/pr-${PR_NUMBER}/">/$(printf '%s' "${REPOSITORY#*/}")/pr-preview/pr-${PR_NUMBER}/</a></p>
+            </body>
+          </html>
+          EOF
+            fi
             commit_message="Deploy PR preview #${PR_NUMBER}"
           fi
 
