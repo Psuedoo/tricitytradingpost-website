@@ -212,34 +212,16 @@
       </section>
 
       <section class="section shell" id="hours">
-        <div class="hours-panel">
+        <div
+          class="hours-panel"
+          data-hours-endpoint="https://script.google.com/macros/s/AKfycbzYdYK6OL68G7vDQA6Si3JMASHXwL5yMvbbmY62KGCy1vL_3AuwrcM2PDy0guXh5fBR/exec"
+          data-hours-timezone="America/New_York"
+        >
           <p class="hours-status" id="hours-status">
             <strong>Closed</strong> Opens Monday at 10:00 AM
           </p>
           <h2>Business Hours</h2>
-          <div class="hours-list">
-            <div class="hours-row" data-day="0">
-              <span>Sunday</span><strong>Closed</strong>
-            </div>
-            <div class="hours-row" data-day="1">
-              <span>Monday</span><strong>10:00 AM - 7:00 PM</strong>
-            </div>
-            <div class="hours-row" data-day="2">
-              <span>Tuesday</span><strong>10:00 AM - 6:00 PM</strong>
-            </div>
-            <div class="hours-row" data-day="3">
-              <span>Wednesday</span><strong>10:00 AM - 6:00 PM</strong>
-            </div>
-            <div class="hours-row" data-day="4">
-              <span>Thursday</span><strong>10:00 AM - 6:00 PM</strong>
-            </div>
-            <div class="hours-row" data-day="5">
-              <span>Friday</span><strong>10:00 AM - 6:00 PM</strong>
-            </div>
-            <div class="hours-row" data-day="6">
-              <span>Saturday</span><strong>Closed</strong>
-            </div>
-          </div>
+          <div class="hours-list" id="hours-list"></div>
         </div>
       </section>
 
@@ -594,15 +576,17 @@
             return cleanedUrl;
           }
 
-          return cleanedUrl
-            .replace(/=w\d+-h\d+[^"'\s]*/i, "")
-            .replace(/=w\d+[^"'\s]*/i, "")
-            .replace(/=s\d+[^"'\s]*/i, "") +
+          return (
+            cleanedUrl
+              .replace(/=w\d+-h\d+[^"'\s]*/i, "")
+              .replace(/=w\d+[^"'\s]*/i, "")
+              .replace(/=s\d+[^"'\s]*/i, "") +
             "=w" +
             width +
             "-h" +
             height +
-            "-no";
+            "-no"
+          );
         }
 
         function normalizePhoto(photo, index) {
@@ -617,7 +601,11 @@
             photo.thumbnail || photo.thumb || photo.thumbnailUrl || "",
           );
           const alt = String(photo.alt || photo.title || "").trim();
-          const driveFileId = extractDriveFileId(photo, sourceUrl, thumbnailUrl);
+          const driveFileId = extractDriveFileId(
+            photo,
+            sourceUrl,
+            thumbnailUrl,
+          );
           const isDrivePhoto =
             !!driveFileId &&
             /(drive\.google\.com|googleusercontent\.com)/i.test(
@@ -629,13 +617,13 @@
             src: isDrivePhoto
               ? buildDriveImageUrl(driveFileId, 1800)
               : isGooglePhoto
-              ? normalizeGooglePhotoUrl(sourceUrl, 1600, 1200)
-              : sourceUrl,
+                ? normalizeGooglePhotoUrl(sourceUrl, 1600, 1200)
+                : sourceUrl,
             thumbnail: isDrivePhoto
               ? buildDriveImageUrl(driveFileId, 320)
               : isGooglePhoto
-              ? normalizeGooglePhotoUrl(thumbnailUrl || sourceUrl, 240, 240)
-              : thumbnailUrl || sourceUrl,
+                ? normalizeGooglePhotoUrl(thumbnailUrl || sourceUrl, 240, 240)
+                : thumbnailUrl || sourceUrl,
             alt: alt || "Tri-City Trading Post gallery photo " + (index + 1),
           };
         }
@@ -702,16 +690,15 @@
       })();
 
       (function updateHoursStatus() {
-        const schedule = [
-          null,
-          { open: 10 * 60, close: 19 * 60, label: "10:00 AM - 7:00 PM" },
-          { open: 10 * 60, close: 18 * 60, label: "10:00 AM - 6:00 PM" },
-          { open: 10 * 60, close: 18 * 60, label: "10:00 AM - 6:00 PM" },
-          { open: 10 * 60, close: 18 * 60, label: "10:00 AM - 6:00 PM" },
-          { open: 10 * 60, close: 18 * 60, label: "10:00 AM - 6:00 PM" },
-          null,
-        ];
+        const hoursPanel = document.querySelector(".hours-panel");
+        const statusEl = document.getElementById("hours-status");
+        const hoursList = document.getElementById("hours-list");
+        if (!hoursPanel || !statusEl || !hoursList) return;
 
+        const endpoint = String(hoursPanel.dataset.hoursEndpoint || "").trim();
+        const timezone = String(
+          hoursPanel.dataset.hoursTimezone || "America/Detroit",
+        ).trim();
         const dayNames = [
           "Sunday",
           "Monday",
@@ -721,17 +708,15 @@
           "Friday",
           "Saturday",
         ];
-        const now = new Date();
-        const today = now.getDay();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const statusEl = document.getElementById("hours-status");
-
-        document.querySelectorAll(".hours-row").forEach(function (row) {
-          if (Number(row.getAttribute("data-day")) === today) {
-            row.classList.add("hours-row--today");
-            row.querySelector("span").textContent = "Today";
-          }
-        });
+        const defaultSchedule = [
+          null,
+          [{ open: 10 * 60, close: 19 * 60 }],
+          [{ open: 10 * 60, close: 18 * 60 }],
+          [{ open: 10 * 60, close: 18 * 60 }],
+          [{ open: 10 * 60, close: 18 * 60 }],
+          [{ open: 10 * 60, close: 18 * 60 }],
+          null,
+        ];
 
         function formatMinutes(minutes) {
           const hour24 = Math.floor(minutes / 60);
@@ -741,31 +726,248 @@
           return hour12 + ":" + String(mins).padStart(2, "0") + " " + suffix;
         }
 
-        const todayHours = schedule[today];
-        if (
-          todayHours &&
-          currentMinutes >= todayHours.open &&
-          currentMinutes < todayHours.close
-        ) {
+        function getDateKey(date) {
+          return new Intl.DateTimeFormat("en-CA", {
+            timeZone: timezone,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(date);
+        }
+
+        function getStoreNowParts() {
+          const parts = new Intl.DateTimeFormat("en-US", {
+            timeZone: timezone,
+            weekday: "long",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hourCycle: "h23",
+          }).formatToParts(new Date());
+          const values = {};
+          parts.forEach(function (part) {
+            if (part.type !== "literal") {
+              values[part.type] = part.value;
+            }
+          });
+          return {
+            weekdayName: values.weekday,
+            dateKey: values.year + "-" + values.month + "-" + values.day,
+            currentMinutes: Number(values.hour) * 60 + Number(values.minute),
+          };
+        }
+
+        function formatIntervals(intervals) {
+          if (!intervals || !intervals.length) {
+            return "Closed";
+          }
+
+          return intervals
+            .map(function (interval) {
+              return (
+                formatMinutes(interval.open) +
+                " - " +
+                formatMinutes(interval.close)
+              );
+            })
+            .join(", ");
+        }
+
+        function createDayFromSchedule(date, intervals, index) {
+          const weekdayName = dayNames[date.getDay()];
+          return {
+            date: getDateKey(date),
+            label:
+              index === 0 ? "Today" : index === 1 ? "Tomorrow" : weekdayName,
+            weekdayName: weekdayName,
+            closed: !intervals || !intervals.length,
+            intervals: intervals || [],
+            hoursLabel: formatIntervals(intervals || []),
+          };
+        }
+
+        function buildFallbackDays() {
+          const days = [];
+          const now = new Date();
+
+          for (let offset = 0; offset < 7; offset += 1) {
+            const date = new Date(now);
+            date.setDate(now.getDate() + offset);
+            const intervals = defaultSchedule[date.getDay()];
+            days.push(createDayFromSchedule(date, intervals, offset));
+          }
+
+          return days;
+        }
+
+        function normalizeIntervals(rawIntervals) {
+          if (!Array.isArray(rawIntervals)) {
+            return [];
+          }
+
+          return rawIntervals
+            .map(function (interval) {
+              const open = Number(interval.open);
+              const close = Number(interval.close);
+              if (!Number.isFinite(open) || !Number.isFinite(close)) {
+                return null;
+              }
+
+              return { open: open, close: close };
+            })
+            .filter(Boolean)
+            .sort(function (a, b) {
+              return a.open - b.open;
+            });
+        }
+
+        function normalizeHoursPayload(payload) {
+          if (!payload || !Array.isArray(payload.days)) {
+            throw new Error("Hours payload is missing days.");
+          }
+
+          return payload.days.slice(0, 7).map(function (day, index) {
+            const intervals = normalizeIntervals(day.intervals);
+            const closed = Boolean(day.closed) || !intervals.length;
+            const weekdayName = String(day.weekdayName || "").trim();
+
+            return {
+              date: String(day.date || "").trim(),
+              label:
+                String(day.label || "").trim() ||
+                (index === 0
+                  ? "Today"
+                  : index === 1
+                    ? "Tomorrow"
+                    : weekdayName || "Day " + (index + 1)),
+              weekdayName: weekdayName || "Day",
+              closed: closed,
+              intervals: closed ? [] : intervals,
+              hoursLabel:
+                String(day.hoursLabel || "").trim() ||
+                (closed ? "Closed" : formatIntervals(intervals)),
+            };
+          });
+        }
+
+        function renderHours(days) {
+          const storeNow = getStoreNowParts();
+          hoursList.innerHTML = "";
+          statusEl.classList.remove("hours-status--open");
+
+          days.forEach(function (day) {
+            const row = document.createElement("div");
+            row.className = "hours-row";
+            if (day.date === storeNow.dateKey) {
+              row.classList.add("hours-row--today");
+            }
+
+            const label = document.createElement("span");
+            label.textContent =
+              day.date === storeNow.dateKey
+                ? "Today"
+                : day.label || day.weekdayName;
+
+            const value = document.createElement("strong");
+            value.textContent = day.hoursLabel || "Closed";
+
+            row.appendChild(label);
+            row.appendChild(value);
+            hoursList.appendChild(row);
+          });
+
+          const today = days.find(function (day) {
+            return day.date === storeNow.dateKey;
+          });
+
+          if (today && Array.isArray(today.intervals)) {
+            const activeInterval = today.intervals.find(function (interval) {
+              return (
+                storeNow.currentMinutes >= interval.open &&
+                storeNow.currentMinutes < interval.close
+              );
+            });
+
+            if (activeInterval) {
+              statusEl.innerHTML =
+                "<strong>Open now</strong> Closes today at " +
+                formatMinutes(activeInterval.close);
+              statusEl.classList.add("hours-status--open");
+              return;
+            }
+          }
+
+          for (let dayIndex = 0; dayIndex < days.length; dayIndex += 1) {
+            const day = days[dayIndex];
+            const intervals = Array.isArray(day.intervals) ? day.intervals : [];
+            const nextInterval = intervals.find(function (interval) {
+              if (day.date !== storeNow.dateKey) {
+                return true;
+              }
+
+              return interval.open > storeNow.currentMinutes;
+            });
+
+            if (nextInterval) {
+              const nextLabel =
+                day.date === storeNow.dateKey
+                  ? "today"
+                  : day.label === "Tomorrow"
+                    ? "tomorrow"
+                    : day.label;
+              statusEl.innerHTML =
+                "<strong>Closed</strong> Opens " +
+                nextLabel +
+                " at " +
+                formatMinutes(nextInterval.open);
+              return;
+            }
+          }
+
           statusEl.innerHTML =
-            "<strong>Open now</strong> Closes today at " +
-            formatMinutes(todayHours.close);
-          statusEl.classList.add("hours-status--open");
-          return;
+            "<strong>Closed</strong> Check back soon for the next opening time.";
         }
 
-        let nextDay = (today + 1) % 7;
-        while (!schedule[nextDay]) {
-          nextDay = (nextDay + 1) % 7;
+        async function loadRemoteHours() {
+          if (!endpoint) {
+            throw new Error("Hours endpoint is not configured.");
+          }
+
+          const requestUrl = new URL(endpoint, window.location.href);
+          if (!requestUrl.searchParams.has("days")) {
+            requestUrl.searchParams.set("days", "7");
+          }
+
+          const response = await fetch(requestUrl.toString(), {
+            method: "GET",
+            headers: { Accept: "application/json" },
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              "Hours request failed with status " + response.status + ".",
+            );
+          }
+
+          const payload = await response.json();
+          if (payload && payload.error) {
+            throw new Error(String(payload.error));
+          }
+
+          return normalizeHoursPayload(payload);
         }
 
-        const nextDayLabel =
-          nextDay === (today + 1) % 7 ? "tomorrow" : dayNames[nextDay];
-        statusEl.innerHTML =
-          "<strong>Closed</strong> Opens " +
-          nextDayLabel +
-          " at " +
-          formatMinutes(schedule[nextDay].open);
+        (async function initHours() {
+          try {
+            const liveDays = await loadRemoteHours();
+            renderHours(liveDays);
+          } catch (error) {
+            renderHours(buildFallbackDays());
+            console.error("Hours fallback enabled:", error);
+          }
+        })();
       })();
 
       (function initContactForm() {
