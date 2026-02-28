@@ -350,16 +350,34 @@
             id="contact-form"
             action="#"
             method="post"
-            data-sheet-endpoint="https://script.google.com/macros/s/AKfycbzPUcncgmTOctrwPimTb1tCN5gsWxq0RkqjrUEryZ5uoW_D7YjevfGmSAKSueiU-L1-/exec"
+            data-sheet-endpoint="https://script.google.com/macros/s/AKfycbyXVcWpiTMwD5p4-gxP097Onnc-Za10l5iFhfD1233aKIx-3GvkUl1OSe7qtI503oMt/exec"
           >
             <label for="name">Name</label>
-            <input id="name" name="name" type="text" required />
+            <input id="name" name="name" type="text" maxlength="120" required />
 
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" required />
+            <input id="email" name="email" type="email" maxlength="254" />
+
+            <label for="phone">Phone</label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              maxlength="30"
+              pattern=".*\d.*"
+              title="Phone number must include at least one digit."
+            />
 
             <label for="message">Message</label>
-            <textarea id="message" name="message" rows="4" required></textarea>
+            <textarea
+              id="message"
+              name="message"
+              rows="4"
+              maxlength="3000"
+              required
+            ></textarea>
 
             <input
               type="text"
@@ -369,6 +387,7 @@
               class="form-honeypot"
               aria-hidden="true"
             />
+            <input type="hidden" name="formStartedAt" id="form-started-at" />
 
             <button type="submit" class="btn btn--solid">Send Message</button>
             <p
@@ -575,6 +594,18 @@
 
         const endpoint = (form.dataset.sheetEndpoint || "").trim();
         const submitButton = form.querySelector('button[type="submit"]');
+        const nameInput = document.getElementById("name");
+        const emailInput = document.getElementById("email");
+        const phoneInput = document.getElementById("phone");
+        const messageInput = document.getElementById("message");
+        const formStartedAtInput = document.getElementById("form-started-at");
+        const minFillMs = 3000;
+        const localCooldownMs = 30000;
+        const localCooldownKey = "contactFormLastSubmitAt";
+
+        if (formStartedAtInput) {
+          formStartedAtInput.value = String(Date.now());
+        }
 
         if (!endpoint) {
           statusEl.textContent =
@@ -586,8 +617,81 @@
         form.addEventListener("submit", function (event) {
           event.preventDefault();
 
+          const name = String((nameInput && nameInput.value) || "").trim();
+          const email = String((emailInput && emailInput.value) || "").trim();
+          const phone = String((phoneInput && phoneInput.value) || "").trim();
+          const message = String(
+            (messageInput && messageInput.value) || "",
+          ).trim();
+          const hasPhoneDigits = /\d/.test(phone);
+          const formStartedAt = Number(
+            (formStartedAtInput && formStartedAtInput.value) || 0,
+          );
+          const elapsedMs = formStartedAt > 0 ? Date.now() - formStartedAt : 0;
+          const lastSubmittedAt = Number(
+            window.localStorage.getItem(localCooldownKey) || 0,
+          );
+
+          if (!name) {
+            statusEl.textContent = "Name is required.";
+            statusEl.className = "form-status form-status--error";
+            if (nameInput) {
+              nameInput.focus();
+            }
+            return;
+          }
+
+          if (!phone) {
+            if (!email) {
+              statusEl.textContent =
+                "Enter either a phone number or an email address.";
+              statusEl.className = "form-status form-status--error";
+              if (phoneInput) {
+                phoneInput.focus();
+              }
+              return;
+            }
+          }
+
+          if (phone && !hasPhoneDigits) {
+            statusEl.textContent =
+              "Phone number must include at least one digit.";
+            statusEl.className = "form-status form-status--error";
+            if (phoneInput) {
+              phoneInput.focus();
+            }
+            return;
+          }
+
+          if (!message) {
+            statusEl.textContent = "Message is required.";
+            statusEl.className = "form-status form-status--error";
+            if (messageInput) {
+              messageInput.focus();
+            }
+            return;
+          }
+
+          if (elapsedMs > 0 && elapsedMs < minFillMs) {
+            statusEl.textContent =
+              "Please take a moment to complete the form before submitting.";
+            statusEl.className = "form-status form-status--error";
+            return;
+          }
+
+          if (
+            lastSubmittedAt > 0 &&
+            Date.now() - lastSubmittedAt < localCooldownMs
+          ) {
+            statusEl.textContent =
+              "Please wait a bit before sending another message.";
+            statusEl.className = "form-status form-status--error";
+            return;
+          }
+
           const payload = new FormData(form);
           payload.append("submittedAt", new Date().toISOString());
+          payload.append("clientElapsedMs", String(Math.max(elapsedMs, 0)));
           payload.append("page", window.location.href);
           payload.append("userAgent", navigator.userAgent);
 
@@ -606,6 +710,13 @@
           })
             .then(function () {
               form.reset();
+              if (formStartedAtInput) {
+                formStartedAtInput.value = String(Date.now());
+              }
+              window.localStorage.setItem(
+                localCooldownKey,
+                String(Date.now()),
+              );
               statusEl.textContent =
                 "Message sent. If needed, we will follow up by email or phone.";
               statusEl.className = "form-status form-status--success";
