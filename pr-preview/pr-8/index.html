@@ -218,11 +218,11 @@
           data-hours-timezone="America/Detroit"
           aria-busy="true"
         >
-          <h2>Business Hours</h2>
-          <div class="hours-loading" aria-hidden="true">
-            <span class="gallery-loading__spinner"></span>
-          </div>
           <p class="hours-status" id="hours-status"></p>
+          <h2>Business Hours</h2>
+          <div class="hours-loading" id="hours-loading" aria-hidden="true">
+            <span class="hours-loading__spinner"></span>
+          </div>
           <div class="hours-list" id="hours-list"></div>
         </div>
       </section>
@@ -693,9 +693,10 @@
 
       (function updateHoursStatus() {
         const hoursPanel = document.querySelector(".hours-panel");
+        const hoursLoading = document.getElementById("hours-loading");
         const statusEl = document.getElementById("hours-status");
         const hoursList = document.getElementById("hours-list");
-        if (!hoursPanel || !statusEl || !hoursList) return;
+        if (!hoursPanel || !hoursLoading || !statusEl || !hoursList) return;
 
         const endpoint = String(hoursPanel.dataset.hoursEndpoint || "").trim();
         const timezone = String(
@@ -935,6 +936,7 @@
         function setHoursLoadingState(isLoading) {
           hoursPanel.classList.toggle("is-loading", isLoading);
           hoursPanel.setAttribute("aria-busy", isLoading ? "true" : "false");
+          hoursLoading.hidden = !isLoading;
         }
 
         async function loadRemoteHours() {
