@@ -189,85 +189,24 @@
       </section>
 
       <section class="section section--alt" id="gallery">
-        <div class="shell">
+        <div
+          class="shell gallery-shell is-loading"
+          data-gallery-endpoint="https://script.google.com/macros/s/AKfycbzm7j5mpsstbOk7lLM3bSivu5h8om9a2YHxLv1BFDgyHqGWaokNGo1jDXmt_x49d_cT7Q/exec"
+          aria-busy="true"
+        >
           <h2>Gallery</h2>
           <p>Recent inventory and in-store photos. Selection changes daily.</p>
+          <div class="gallery-loading" aria-hidden="true">
+            <span class="gallery-loading__spinner"></span>
+          </div>
           <sl-carousel
             class="carousel-thumbnails"
             navigation
             loop
             mouse-dragging
-          >
-            <sl-carousel-item>
-              <img
-                src="assets/images/img_4539_a.jpg"
-                alt="Tri-City Trading Post storefront photo"
-              />
-            </sl-carousel-item>
-            <sl-carousel-item>
-              <img
-                src="assets/images/storefront_crop.jpg"
-                alt="Tri-City Trading Post exterior image"
-              />
-            </sl-carousel-item>
-            <sl-carousel-item>
-              <img
-                src="assets/images/img_4533.jpg"
-                alt="Tri-City Trading Post shop photo"
-              />
-            </sl-carousel-item>
-            <sl-carousel-item>
-              <img
-                src="assets/images/img_4538.jpg"
-                alt="Tri-City Trading Post inventory display"
-              />
-            </sl-carousel-item>
-            <sl-carousel-item>
-              <img
-                src="assets/images/blob_faa9c0b.png"
-                alt="Tri-City Trading Post logo graphic"
-              />
-            </sl-carousel-item>
-            <sl-carousel-item>
-              <img
-                src="assets/images/thumbnail_1.jfif"
-                alt="Tri-City Trading Post location view"
-              />
-            </sl-carousel-item>
-          </sl-carousel>
+          ></sl-carousel>
           <div class="thumbnails">
-            <div class="thumbnails__scroller">
-              <img
-                class="thumbnails__image active"
-                src="assets/images/img_4539_a.jpg"
-                alt="Thumbnail 1"
-              />
-              <img
-                class="thumbnails__image"
-                src="assets/images/storefront_crop.jpg"
-                alt="Thumbnail 2"
-              />
-              <img
-                class="thumbnails__image"
-                src="assets/images/img_4533.jpg"
-                alt="Thumbnail 3"
-              />
-              <img
-                class="thumbnails__image"
-                src="assets/images/img_4538.jpg"
-                alt="Thumbnail 4"
-              />
-              <img
-                class="thumbnails__image"
-                src="assets/images/blob_faa9c0b.png"
-                alt="Thumbnail 5"
-              />
-              <img
-                class="thumbnails__image"
-                src="assets/images/thumbnail_1.jfif"
-                alt="Thumbnail 6"
-              />
-            </div>
+            <div class="thumbnails__scroller"></div>
           </div>
         </div>
       </section>
@@ -494,30 +433,272 @@
       })();
 
       (function initShoelaceGallery() {
+        const galleryRoot = document.querySelector("[data-gallery-endpoint]");
         const carousel = document.querySelector(".carousel-thumbnails");
         const scroller = document.querySelector(".thumbnails__scroller");
-        const thumbnails = Array.from(
-          document.querySelectorAll(".thumbnails__image"),
-        );
+        if (!galleryRoot || !carousel || !scroller) return;
 
-        scroller.addEventListener("click", function (event) {
-          const target = event.target;
-          if (!target.matches(".thumbnails__image")) {
-            return;
-          }
-          const index = thumbnails.indexOf(target);
-          carousel.goToSlide(index);
-        });
+        const endpoint = (galleryRoot.dataset.galleryEndpoint || "").trim();
+        const galleryLimitValue = String(
+          galleryRoot.dataset.galleryLimit || "",
+        ).trim();
+        const galleryLimit = galleryLimitValue
+          ? Math.max(Number(galleryLimitValue) || 1, 1)
+          : null;
+        const fallbackPhotos = [
+          {
+            src: "assets/images/img_4539_a.jpg",
+            thumbnail: "assets/images/img_4539_a.jpg",
+            alt: "Tri-City Trading Post storefront photo",
+          },
+          {
+            src: "assets/images/storefront_crop.jpg",
+            thumbnail: "assets/images/storefront_crop.jpg",
+            alt: "Tri-City Trading Post exterior image",
+          },
+          {
+            src: "assets/images/img_4533.jpg",
+            thumbnail: "assets/images/img_4533.jpg",
+            alt: "Tri-City Trading Post shop photo",
+          },
+          {
+            src: "assets/images/img_4538.jpg",
+            thumbnail: "assets/images/img_4538.jpg",
+            alt: "Tri-City Trading Post inventory display",
+          },
+          {
+            src: "assets/images/blob_faa9c0b.png",
+            thumbnail: "assets/images/blob_faa9c0b.png",
+            alt: "Tri-City Trading Post logo graphic",
+          },
+          {
+            src: "assets/images/thumbnail_1.jfif",
+            thumbnail: "assets/images/thumbnail_1.jfif",
+            alt: "Tri-City Trading Post location view",
+          },
+        ];
 
-        carousel.addEventListener("sl-slide-change", function (event) {
-          const slideIndex = event.detail.index;
-          thumbnails.forEach(function (thumb, index) {
-            thumb.classList.toggle("active", index === slideIndex);
-            if (index === slideIndex) {
-              thumb.scrollIntoView({ block: "nearest", inline: "nearest" });
+        function createSlide(photo) {
+          const item = document.createElement("sl-carousel-item");
+          const img = document.createElement("img");
+          img.src = photo.src;
+          img.alt = photo.alt;
+          img.loading = "lazy";
+          item.appendChild(img);
+          return item;
+        }
+
+        function createThumbnail(photo, index) {
+          const img = document.createElement("img");
+          img.className = "thumbnails__image";
+          img.src = photo.thumbnail || photo.src;
+          img.alt = photo.alt || "Gallery thumbnail " + (index + 1);
+          img.loading = "lazy";
+          img.dataset.index = String(index);
+          return img;
+        }
+
+        function wireThumbnailNavigation() {
+          const thumbnails = Array.from(
+            scroller.querySelectorAll(".thumbnails__image"),
+          );
+
+          scroller.onclick = function (event) {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+              return;
             }
+            if (!target.matches(".thumbnails__image")) {
+              return;
+            }
+            const index = Number(target.dataset.index);
+            if (Number.isFinite(index)) {
+              carousel.goToSlide(index);
+            }
+          };
+
+          carousel.addEventListener("sl-slide-change", function (event) {
+            const slideIndex = event.detail.index;
+            thumbnails.forEach(function (thumb, index) {
+              thumb.classList.toggle("active", index === slideIndex);
+              if (index === slideIndex) {
+                thumb.scrollIntoView({ block: "nearest", inline: "nearest" });
+              }
+            });
           });
-        });
+
+          if (thumbnails[0]) {
+            thumbnails[0].classList.add("active");
+          }
+        }
+
+        function renderGallery(photos) {
+          carousel.innerHTML = "";
+          scroller.innerHTML = "";
+
+          photos.forEach(function (photo, index) {
+            carousel.appendChild(createSlide(photo));
+            scroller.appendChild(createThumbnail(photo, index));
+          });
+
+          wireThumbnailNavigation();
+        }
+
+        function setLoadingState(isLoading) {
+          galleryRoot.classList.toggle("is-loading", isLoading);
+          galleryRoot.setAttribute("aria-busy", isLoading ? "true" : "false");
+        }
+
+        function cleanRemoteUrl(url) {
+          if (!url) return "";
+          return String(url)
+            .replace(/\\u003d/g, "=")
+            .replace(/\\u0026/g, "&")
+            .replace(/\\\//g, "/")
+            .replace(/&amp;/g, "&")
+            .trim();
+        }
+
+        function extractDriveFileId(photo, sourceUrl, thumbnailUrl) {
+          const explicitId = String(photo.id || photo.fileId || "").trim();
+          if (explicitId) {
+            return explicitId;
+          }
+
+          const driveUrl = sourceUrl || thumbnailUrl;
+          if (!driveUrl) {
+            return "";
+          }
+
+          const idQueryMatch = driveUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+          if (idQueryMatch) {
+            return idQueryMatch[1];
+          }
+
+          const pathMatch = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+          if (pathMatch) {
+            return pathMatch[1];
+          }
+
+          return "";
+        }
+
+        function buildDriveImageUrl(fileId, width) {
+          return "https://lh3.googleusercontent.com/d/" + fileId + "=w" + width;
+        }
+
+        function normalizeGooglePhotoUrl(url, width, height) {
+          const cleanedUrl = cleanRemoteUrl(url);
+          if (!cleanedUrl) return "";
+          if (!/^https?:\/\//i.test(cleanedUrl)) {
+            return cleanedUrl;
+          }
+
+          return cleanedUrl
+            .replace(/=w\d+-h\d+[^"'\s]*/i, "")
+            .replace(/=w\d+[^"'\s]*/i, "")
+            .replace(/=s\d+[^"'\s]*/i, "") +
+            "=w" +
+            width +
+            "-h" +
+            height +
+            "-no";
+        }
+
+        function normalizePhoto(photo, index) {
+          const sourceUrl = cleanRemoteUrl(
+            photo.src || photo.url || photo.imageUrl || "",
+          );
+          if (!sourceUrl) {
+            return null;
+          }
+
+          const thumbnailUrl = cleanRemoteUrl(
+            photo.thumbnail || photo.thumb || photo.thumbnailUrl || "",
+          );
+          const alt = String(photo.alt || photo.title || "").trim();
+          const driveFileId = extractDriveFileId(photo, sourceUrl, thumbnailUrl);
+          const isDrivePhoto =
+            !!driveFileId &&
+            /(drive\.google\.com|googleusercontent\.com)/i.test(
+              sourceUrl + " " + thumbnailUrl,
+            );
+          const isGooglePhoto = /googleusercontent\.com/i.test(sourceUrl);
+
+          return {
+            src: isDrivePhoto
+              ? buildDriveImageUrl(driveFileId, 1800)
+              : isGooglePhoto
+              ? normalizeGooglePhotoUrl(sourceUrl, 1600, 1200)
+              : sourceUrl,
+            thumbnail: isDrivePhoto
+              ? buildDriveImageUrl(driveFileId, 320)
+              : isGooglePhoto
+              ? normalizeGooglePhotoUrl(thumbnailUrl || sourceUrl, 240, 240)
+              : thumbnailUrl || sourceUrl,
+            alt: alt || "Tri-City Trading Post gallery photo " + (index + 1),
+          };
+        }
+
+        function normalizePayload(payload) {
+          const rawPhotos = Array.isArray(payload)
+            ? payload
+            : Array.isArray(payload && payload.photos)
+              ? payload.photos
+              : [];
+
+          return rawPhotos
+            .map(normalizePhoto)
+            .filter(Boolean)
+            .slice(0, galleryLimit || undefined);
+        }
+
+        async function loadRemotePhotos() {
+          if (!endpoint) {
+            throw new Error("Gallery endpoint is not configured.");
+          }
+
+          const requestUrl = new URL(endpoint, window.location.href);
+          if (galleryLimit && !requestUrl.searchParams.has("limit")) {
+            requestUrl.searchParams.set("limit", String(galleryLimit));
+          }
+
+          const response = await fetch(requestUrl.toString(), {
+            method: "GET",
+            headers: { Accept: "application/json" },
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              "Gallery request failed with status " + response.status + ".",
+            );
+          }
+
+          const payload = await response.json();
+          if (payload && payload.error) {
+            throw new Error(String(payload.error));
+          }
+
+          const photos = normalizePayload(payload);
+          if (!photos.length) {
+            throw new Error("No gallery photos were returned.");
+          }
+
+          return photos;
+        }
+
+        (async function loadGallery() {
+          setLoadingState(true);
+          try {
+            const photos = await loadRemotePhotos();
+            renderGallery(photos);
+          } catch (error) {
+            renderGallery(fallbackPhotos);
+            console.error("Gallery fallback enabled:", error);
+          } finally {
+            setLoadingState(false);
+          }
+        })();
       })();
 
       (function updateHoursStatus() {
@@ -713,10 +894,7 @@
               if (formStartedAtInput) {
                 formStartedAtInput.value = String(Date.now());
               }
-              window.localStorage.setItem(
-                localCooldownKey,
-                String(Date.now()),
-              );
+              window.localStorage.setItem(localCooldownKey, String(Date.now()));
               statusEl.textContent =
                 "Message sent. If needed, we will follow up by email or phone.";
               statusEl.className = "form-status form-status--success";
