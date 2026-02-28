@@ -409,6 +409,45 @@ h2 {
   margin-top: 1rem;
 }
 
+.gallery-shell {
+  position: relative;
+}
+
+.gallery-loading {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  min-height: 12rem;
+}
+
+.gallery-shell.is-loading .gallery-loading {
+  display: flex;
+}
+
+.gallery-shell.is-loading .carousel-thumbnails,
+.gallery-shell.is-loading .thumbnails {
+  display: none;
+}
+
+.gallery-loading__spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 3px solid rgba(31, 74, 69, 0.18);
+  border-top-color: var(--pine);
+  animation: gallery-spin 0.8s linear infinite;
+}
+
+@keyframes gallery-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .carousel-thumbnails sl-carousel-item {
   display: flex;
   align-items: center;
