@@ -614,6 +614,22 @@ h2 {
   padding: 1.2rem 1rem;
 }
 
+.hours-loading {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  min-height: 8rem;
+}
+
+.hours-panel.is-loading .hours-loading {
+  display: flex;
+}
+
+.hours-panel.is-loading .hours-status,
+.hours-panel.is-loading .hours-list {
+  display: none;
+}
+
 .hours-status {
   margin: 0 0 0.95rem;
   color: #6a6a6a;
