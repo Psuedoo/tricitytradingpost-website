@@ -15,6 +15,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: gh-pages-${{ github.event.pull_request.number || github.ref }}
@@ -118,8 +119,7 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const marker = '<!-- gh-pages-preview -->';
             const previewUrl = `https://${owner}.github.io/${repo}/pr-preview/pr-${prNumber}/`;
-            const body = `${marker}
-            Preview deployed: ${previewUrl}`;
+            const body = `${marker}\nPreview deployed: ${previewUrl}`;
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
