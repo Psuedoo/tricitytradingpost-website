@@ -18,7 +18,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: gh-pages-${{ github.event.pull_request.number || github.ref }}
+  group: gh-pages-publish
   cancel-in-progress: true
 
 jobs:
@@ -104,7 +104,20 @@ jobs:
           if git status --short | grep .; then
             git add -A
             git commit -m "$commit_message"
-            git push origin gh-pages
+
+            for attempt in 1 2 3; do
+              if git push origin gh-pages; then
+                break
+              fi
+
+              if [ "$attempt" -eq 3 ]; then
+                echo "Push failed after ${attempt} attempts."
+                exit 1
+              fi
+
+              git fetch --depth=1 origin gh-pages
+              git rebase FETCH_HEAD
+            done
           else
             echo "No publishable changes detected."
           fi
