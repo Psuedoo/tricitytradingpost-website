@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tri-City Trading Post | GunBroker Listings</title>
+    <meta
+      name="description"
+      content="Browse Tri-City Trading Post GunBroker listings."
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/favicon/favicon-16x16.png"
+    />
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any" />
+    <link rel="manifest" href="assets/favicon/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Oswald:wght@500;600;700&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero hero--compact" id="top">
+      <div class="hero__overlay"></div>
+      <nav class="nav shell">
+        <a class="brand" href="index.html">Tri-City Trading Post</a>
+        <sl-dropdown
+          id="mobile-menu"
+          placement="bottom-end"
+          class="mobile-menu-dropdown"
+          distance="4"
+        >
+          <button
+            class="menu-toggle"
+            slot="trigger"
+            type="button"
+            aria-label="Open navigation menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="mobile-menu">
+            <a href="index.html#about">About</a>
+            <a href="ebay.html">eBay Listings</a>
+            <a href="gunbroker.html">GunBroker Listings</a>
+            <a href="index.html#gallery">Gallery</a>
+            <a href="index.html#hours">Hours</a>
+            <a href="index.html#contact">Contact</a>
+          </div>
+        </sl-dropdown>
+        <div class="nav__links" id="site-nav">
+          <a href="index.html#about">About</a>
+          <a href="ebay.html">eBay Listings</a>
+          <a href="gunbroker.html">GunBroker Listings</a>
+          <a href="index.html#gallery">Gallery</a>
+          <a href="index.html#hours">Hours</a>
+          <a href="index.html#contact">Contact</a>
+        </div>
+      </nav>
+      <div class="hero__content shell">
+        <div class="hero__copy">
+          <p class="kicker">Shop Online</p>
+          <h1>Tri-City Trading Post GunBroker Listings</h1>
+          <p class="hero__lead">
+            Browse current listings from our official GunBroker seller page.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section shell listings-section">
+        <sl-card class="listings-card">
+          <div slot="header" class="listings-card__head">
+            <h2>Seller Listings</h2>
+            <sl-button
+              variant="primary"
+              href="https://www.gunbroker.com/all/search?includesellers=1305569&pagesize=96"
+              target="_blank"
+              >Open on GunBroker</sl-button
+            >
+          </div>
+          <div class="listings-controls">
+            <sl-input
+              id="listing-search"
+              placeholder="Search listings by keyword..."
+              clearable
+            ></sl-input>
+          </div>
+          <div id="listings-fallback" class="card card--highlight" hidden>
+            <h3>Open Live Listings on GunBroker</h3>
+            <p>
+              There are no cached listings to display right now. Listings are
+              refreshed automatically every few hours via the GunBroker API.
+            </p>
+            <p>
+              Use the button below to browse the seller page directly on
+              GunBroker.
+            </p>
+            <sl-button
+              variant="primary"
+              href="https://www.gunbroker.com/all/search?includesellers=1305569&pagesize=96"
+              target="_blank"
+              >Browse GunBroker Seller Page</sl-button
+            >
+          </div>
+          <div id="listings-grid" class="listings-grid"></div>
+          <div class="listings-pagination">
+            <sl-button id="page-prev" size="small">Previous</sl-button>
+            <span id="page-status">Page 1</span>
+            <sl-button id="page-next" size="small">Next</sl-button>
+          </div>
+          <p class="listings-note" id="listings-note">Loading listings...</p>
+          <p class="listings-note" id="listings-updated" hidden></p>
+        </sl-card>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer__inner">
+        <p>Tri-City Trading Post | Fenton, MI</p>
+        <p id="copyright"></p>
+      </div>
+    </footer>
+
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"
+    ></script>
+    <script>
+      (function initMobileMenu() {
+        var dropdown = document.getElementById("mobile-menu");
+        if (!dropdown) return;
+
+        dropdown.querySelectorAll(".mobile-menu a").forEach(function (link) {
+          link.addEventListener("click", function () {
+            dropdown.hide();
+          });
+        });
+      })();
+
+      (function initListings() {
+        /*
+         * Listings are pre-fetched server-side by a GitHub Actions workflow
+         * and written to listings.json.  The API key never reaches the browser.
+         */
+        const searchInput = document.getElementById("listing-search");
+        const grid = document.getElementById("listings-grid");
+        const prevButton = document.getElementById("page-prev");
+        const nextButton = document.getElementById("page-next");
+        const pageStatus = document.getElementById("page-status");
+        const note = document.getElementById("listings-note");
+        const fallback = document.getElementById("listings-fallback");
+        const controls = document.querySelector(".listings-controls");
+        const pagination = document.querySelector(".listings-pagination");
+        const updatedAt = document.getElementById("listings-updated");
+        const pageSize = 12;
+        let allItems = [];
+        let filteredItems = [];
+        let currentPage = 1;
+
+        function escapeHtml(value) {
+          return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function renderPage() {
+          grid.innerHTML = "";
+
+          if (!filteredItems.length) {
+            if (!allItems.length) {
+              if (controls) controls.hidden = true;
+              if (pagination) pagination.hidden = true;
+              if (fallback) fallback.hidden = false;
+              note.textContent =
+                "No GunBroker listings are available right now.";
+            } else {
+              if (controls) controls.hidden = false;
+              if (pagination) pagination.hidden = false;
+              if (fallback) fallback.hidden = true;
+              note.textContent = "No listings matched your search.";
+            }
+            pageStatus.textContent = "Page 0 of 0";
+            prevButton.disabled = true;
+            nextButton.disabled = true;
+            return;
+          }
+
+          if (controls) controls.hidden = false;
+          if (pagination) pagination.hidden = false;
+          if (fallback) fallback.hidden = true;
+
+          const totalPages = Math.max(
+            1,
+            Math.ceil(filteredItems.length / pageSize),
+          );
+          currentPage = Math.min(currentPage, totalPages);
+          const start = (currentPage - 1) * pageSize;
+          const pageItems = filteredItems.slice(start, start + pageSize);
+
+          pageItems.forEach(function (item) {
+            var typeBadge = item.type
+              ? '<span class="listing-card__badge">' +
+                escapeHtml(item.type) +
+                "</span>"
+              : "";
+            var bidInfo =
+              item.bidCount > 0
+                ? '<span class="listing-card__bids">' +
+                  item.bidCount +
+                  " bid" +
+                  (item.bidCount === 1 ? "" : "s") +
+                  "</span>"
+                : "";
+
+            const cardWrap = document.createElement("div");
+            cardWrap.innerHTML =
+              '<a class="listing-link" href="' +
+              escapeHtml(item.url) +
+              '" target="_blank" rel="noopener noreferrer">' +
+              '<sl-card class="listing-card">' +
+              '<img class="listing-card__img" src="' +
+              escapeHtml(item.image || "assets/images/blob_faa9c0b.png") +
+              '" alt="' +
+              escapeHtml(item.title) +
+              '" loading="lazy">' +
+              '<div class="listing-card__body">' +
+              '<p class="listing-card__price">' +
+              escapeHtml(item.price) +
+              typeBadge +
+              "</p>" +
+              '<p class="listing-card__title">' +
+              escapeHtml(item.title) +
+              "</p>" +
+              bidInfo +
+              "</div>" +
+              "</sl-card>" +
+              "</a>";
+            grid.appendChild(cardWrap.firstChild);
+          });
+
+          note.textContent =
+            "Showing " +
+            pageItems.length +
+            " of " +
+            filteredItems.length +
+            " listing" +
+            (filteredItems.length === 1 ? "" : "s") +
+            ".";
+          pageStatus.textContent = "Page " + currentPage + " of " + totalPages;
+          prevButton.disabled = currentPage <= 1;
+          nextButton.disabled = currentPage >= totalPages;
+        }
+
+        fetch("listings.json")
+          .then(function (res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            allItems = (data.items || []).filter(function (item) {
+              return item && item.url && item.title;
+            });
+            filteredItems = allItems.slice();
+            currentPage = 1;
+            renderPage();
+
+            // Show when listings were last refreshed
+            if (updatedAt && data.fetchedAt) {
+              var date = new Date(data.fetchedAt);
+              updatedAt.textContent =
+                "Listings last updated: " + date.toLocaleString();
+              updatedAt.hidden = false;
+            }
+          })
+          .catch(function () {
+            renderPage();
+          });
+
+        prevButton.addEventListener("click", function () {
+          if (currentPage > 1) {
+            currentPage -= 1;
+            renderPage();
+          }
+        });
+
+        nextButton.addEventListener("click", function () {
+          const totalPages = Math.max(
+            1,
+            Math.ceil(filteredItems.length / pageSize),
+          );
+          if (currentPage < totalPages) {
+            currentPage += 1;
+            renderPage();
+          }
+        });
+
+        searchInput.addEventListener("sl-input", function (event) {
+          const term = String(event.target.value || "")
+            .trim()
+            .toLowerCase();
+
+          if (!term) {
+            filteredItems = allItems.slice();
+            currentPage = 1;
+            renderPage();
+            return;
+          }
+
+          filteredItems = allItems.filter(function (item) {
+            return item.title.toLowerCase().indexOf(term) !== -1;
+          });
+          currentPage = 1;
+          renderPage();
+        });
+      })();
+
+      document.getElementById("copyright").textContent =
+        "Copyright " +
+        new Date().getFullYear() +
+        " Tri-City Trading Post. All rights reserved.";
+    </script>
+  </body>
+</html>
