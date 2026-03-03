@@ -1,0 +1,93 @@
+name: Refresh GunBroker Listings
+
+on:
+  schedule:
+    # Every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch listings from GunBroker API
+        env:
+          GUNBROKER_DEV_KEY: ${{ secrets.GUNBROKER_DEV_KEY }}
+          # Switch to production when ready:
+          # GUNBROKER_API_BASE: https://api.gunbroker.com
+          GUNBROKER_API_BASE: https://api.sandbox.gunbroker.com
+        run: node scripts/fetch-listings.js
+
+      - name: Build static site bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp index.html ebay.html gunbroker.html styles.css listings.json _site/
+          cp -R assets _site/assets
+          touch _site/.nojekyll
+
+      - name: Publish to gh-pages branch
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          publish_dir="$(mktemp -d)"
+          cd "$publish_dir"
+          git init
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
+
+          if git fetch --depth=1 origin gh-pages; then
+            git checkout -B gh-pages FETCH_HEAD
+          else
+            git checkout --orphan gh-pages
+          fi
+
+          touch .nojekyll
+          # Only update root-level site files (preserve pr-preview dirs)
+          for f in index.html ebay.html gunbroker.html styles.css listings.json; do
+            cp "$GITHUB_WORKSPACE/_site/$f" "./$f" 2>/dev/null || true
+          done
+          cp -R "$GITHUB_WORKSPACE/_site/assets" ./assets 2>/dev/null || true
+
+          if git status --short | grep .; then
+            git add -A
+            git commit -m "Refresh GunBroker listings (scheduled)"
+            for attempt in 1 2 3; do
+              if git push origin gh-pages; then
+                break
+              fi
+              if [ "$attempt" -eq 3 ]; then
+                echo "Push failed after ${attempt} attempts."
+                exit 1
+              fi
+              git fetch --depth=1 origin gh-pages
+              git rebase FETCH_HEAD
+            done
+          else
+            echo "No listing changes detected."
+          fi

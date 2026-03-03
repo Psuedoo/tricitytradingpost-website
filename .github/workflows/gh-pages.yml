@@ -32,6 +32,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Node.js
+        if: github.event_name != 'pull_request' || github.event.action != 'closed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch GunBroker listings
+        if: github.event_name != 'pull_request' || github.event.action != 'closed'
+        env:
+          GUNBROKER_DEV_KEY: ${{ secrets.GUNBROKER_DEV_KEY }}
+          # Switch to production when ready:
+          # GUNBROKER_API_BASE: https://api.gunbroker.com
+          GUNBROKER_API_BASE: https://api.sandbox.gunbroker.com
+        run: node scripts/fetch-listings.js
+
       - name: Build static site bundle
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
         shell: bash
@@ -39,7 +54,9 @@ jobs:
           set -euo pipefail
 
           mkdir -p _site
-          cp index.html ebay.html styles.css _site/
+          cp index.html ebay.html gunbroker.html styles.css _site/
+          # listings.json may not exist if the API key isn't configured yet
+          [ -f listings.json ] && cp listings.json _site/ || echo '{"items":[]}' > _site/listings.json
           cp -R assets _site/assets
           touch _site/.nojekyll
 
@@ -79,6 +96,7 @@ jobs:
             fi
 
             bootstrap_dir="$(mktemp -d)"
+            git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- index.html ebay.html gunbroker.html styles.css assets 2>/dev/null || \
             git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- index.html ebay.html styles.css assets
             cp -R "$bootstrap_dir/." .
             touch .nojekyll
