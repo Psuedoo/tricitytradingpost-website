@@ -39,7 +39,7 @@ jobs:
           set -euo pipefail
 
           mkdir -p _site
-          cp index.html ebay.html styles.css _site/
+          cp index.html ebay.html styles.css robots.txt _site/
           cp -R assets _site/assets
           touch _site/.nojekyll
 
@@ -79,7 +79,7 @@ jobs:
             fi
 
             bootstrap_dir="$(mktemp -d)"
-            git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- index.html ebay.html styles.css assets
+            git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- index.html ebay.html styles.css robots.txt assets
             cp -R "$bootstrap_dir/." .
             touch .nojekyll
           }
