@@ -447,6 +447,10 @@ h2 {
   color: var(--ink-soft);
 }
 
+.compare-head p + p {
+  margin-top: 0.85rem;
+}
+
 .compare-grid {
   margin-top: 1rem;
   display: grid;
@@ -516,6 +520,48 @@ h2 {
   font-weight: 600;
 }
 
+.transfer-details {
+  margin-top: 1rem;
+}
+
+.transfer-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.transfer-detail-card h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.transfer-detail-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--ink-soft);
+}
+
+.what-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.what-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.what-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
 .faq-grid {
   margin-top: 1rem;
   display: grid;
@@ -530,6 +576,54 @@ h2 {
 }
 
 .faq-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.area {
+  max-width: 78ch;
+}
+
+.area p {
+  color: var(--ink-soft);
+}
+
+.area-list {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.area-list span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.28rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(194, 161, 107, 0.32);
+  background: rgba(194, 161, 107, 0.1);
+  color: var(--canvas);
+  font-family: "Rajdhani", "Arial Narrow", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.trust-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.trust-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.trust-card p {
   margin: 0;
   color: var(--ink-soft);
 }
@@ -1144,12 +1238,24 @@ h2 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .what-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .compare-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transfer-detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .faq-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hours-panel {
