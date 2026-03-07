@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /pr-preview/
+Disallow: /*/pr-preview/
+Disallow: /tricitytradingpost-website/pr-preview/
