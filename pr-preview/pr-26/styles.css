@@ -587,12 +587,81 @@ h2 {
   letter-spacing: 0.05em;
 }
 
+.transfer-detail-card p {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+}
+
 .transfer-detail-card ul {
   margin: 0;
   padding-left: 1.1rem;
   display: grid;
   gap: 0.45rem;
   color: var(--ink-soft);
+}
+
+.transfer-detail-card--fees {
+  border-color: rgba(194, 161, 107, 0.3);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.transfer-fee-box {
+  border: 1px solid rgba(194, 161, 107, 0.24);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.015);
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.transfer-fee-heading {
+  margin: 0;
+  color: var(--canvas);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.92rem;
+}
+
+.transfer-fee-note {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.transfer-fee-item {
+  margin-top: 0.1rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed rgba(194, 161, 107, 0.22);
+}
+
+.transfer-fee-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.transfer-fee-label {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.transfer-fee-price {
+  color: var(--canvas);
+  white-space: nowrap;
+}
+
+.transfer-fee-detail {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+}
+
+.transfer-fee-final-note {
+  margin: 0;
+  color: var(--canvas);
+  font-weight: 600;
 }
 
 .what-grid {
@@ -1315,6 +1384,20 @@ h2 {
 
   .transfer-detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transfer-detail-card--before-buy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .transfer-detail-card--checklist {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .transfer-detail-card--fees {
+    grid-column: 1 / -1;
   }
 
   .faq-grid {
