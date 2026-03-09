@@ -38,8 +38,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          python3 scripts/fetch_ebay_listings.py
-
           mkdir -p _site
           shopt -s nullglob
           html_files=( *.html )
@@ -51,9 +49,6 @@ jobs:
           cp styles.css robots.txt _site/
           cp -R assets _site/assets
           touch _site/.nojekyll
-        env:
-          EBAY_AUTH_TOKEN: ${{ secrets.EBAY_AUTH_TOKEN }}
-          EBAY_SELLER_USER_ID: tctpmiki
 
       - name: Publish to gh-pages branch
         shell: bash
