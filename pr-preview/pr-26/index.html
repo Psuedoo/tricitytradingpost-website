@@ -129,7 +129,7 @@
     <header class="hero" id="top">
       <div class="hero__overlay"></div>
       <nav class="nav shell">
-        <a class="brand" href="index.html">Tri-City Trading Post</a>
+        <a class="brand" href="./">Tri-City Trading Post</a>
         <sl-dropdown
           id="mobile-menu"
           placement="bottom-end"
@@ -147,21 +147,21 @@
             <span></span>
           </button>
           <div class="mobile-menu">
-            <a class="is-active" href="index.html" aria-current="page">Home</a>
-            <a href="index.html#about">About</a>
+            <a class="is-active" href="./" aria-current="page">Home</a>
+            <a href="./#about">About</a>
             <a href="gun-transfers.html">Gun Transfers</a>
             <a href="ebay.html">eBay Listings</a>
-            <a href="index.html#hours">Hours</a>
-            <a href="index.html#contact">Contact</a>
+            <a href="./#hours">Hours</a>
+            <a href="./#contact">Contact</a>
           </div>
         </sl-dropdown>
         <div class="nav__links" id="site-nav">
-          <a class="is-active" href="index.html" aria-current="page">Home</a>
-          <a href="index.html#about">About</a>
+          <a class="is-active" href="./" aria-current="page">Home</a>
+          <a href="./#about">About</a>
           <a href="gun-transfers.html">Gun Transfers</a>
           <a href="ebay.html">eBay Listings</a>
-          <a href="index.html#hours">Hours</a>
-          <a href="index.html#contact">Contact</a>
+          <a href="./#hours">Hours</a>
+          <a href="./#contact">Contact</a>
         </div>
       </nav>
       <div class="hero__content shell">
@@ -668,9 +668,18 @@
         dropdown.querySelectorAll(".mobile-menu a").forEach(function (link) {
           link.addEventListener("click", function (e) {
             var href = link.getAttribute("href");
-            if (href.startsWith("#")) {
+            if (!href) {
+              dropdown.hide();
+              return;
+            }
+
+            var url = new URL(href, window.location.href);
+            var currentPath = window.location.pathname.replace(/\/index\.html$/, "/");
+            var targetPath = url.pathname.replace(/\/index\.html$/, "/");
+
+            if (url.hash && currentPath === targetPath) {
               e.preventDefault();
-              var target = document.querySelector(href);
+              var target = document.querySelector(url.hash);
               if (target) {
                 target.scrollIntoView({ behavior: "smooth" });
               }
