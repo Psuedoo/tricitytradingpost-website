@@ -188,6 +188,28 @@ a {
   padding: 0.45rem 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.nav__links a:hover,
+.nav__links a:focus-visible,
+.mobile-menu a:hover,
+.mobile-menu a:focus-visible {
+  color: #fff;
+  background: rgba(194, 161, 107, 0.18);
+  border-color: rgba(194, 161, 107, 0.5);
+}
+
+.nav__links a.is-active,
+.mobile-menu a.is-active {
+  color: #0f1419;
+  background: var(--rust);
+  border-color: var(--rust);
+  box-shadow: 0 0 0 1px rgba(15, 20, 25, 0.08);
 }
 
 .menu-toggle {
@@ -1345,6 +1367,21 @@ h2 {
     background: transparent;
     border: 0;
     padding: 0;
+  }
+
+  .nav__links a:hover,
+  .nav__links a:focus-visible {
+    color: var(--rust);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .nav__links a.is-active {
+    color: var(--rust);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
 
   .split {
