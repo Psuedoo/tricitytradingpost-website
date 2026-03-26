@@ -693,6 +693,8 @@
         const galleryLimit = galleryLimitValue
           ? Math.max(Number(galleryLimitValue) || 1, 1)
           : null;
+        const galleryCacheKey = "galleryPhotosCacheV1";
+        const galleryCacheTtlMs = 6 * 60 * 60 * 1000;
         const fallbackPhotos = [
           {
             src: "assets/images/img_4539_a.jpg",
@@ -907,6 +909,45 @@
             .slice(0, galleryLimit || undefined);
         }
 
+        function readCachedPhotos() {
+          try {
+            const raw = window.localStorage.getItem(galleryCacheKey);
+            if (!raw) return null;
+
+            const parsed = JSON.parse(raw);
+            if (
+              !parsed ||
+              !Array.isArray(parsed.photos) ||
+              !Number.isFinite(parsed.savedAt)
+            ) {
+              return null;
+            }
+
+            if (Date.now() - parsed.savedAt > galleryCacheTtlMs) {
+              return null;
+            }
+
+            return parsed.photos;
+          } catch (error) {
+            console.warn("Unable to read gallery cache.", error);
+            return null;
+          }
+        }
+
+        function writeCachedPhotos(photos) {
+          try {
+            window.localStorage.setItem(
+              galleryCacheKey,
+              JSON.stringify({
+                savedAt: Date.now(),
+                photos: photos,
+              }),
+            );
+          } catch (error) {
+            console.warn("Unable to write gallery cache.", error);
+          }
+        }
+
         async function loadRemotePhotos() {
           if (!endpoint) {
             throw new Error("Gallery endpoint is not configured.");
@@ -942,13 +983,25 @@
         }
 
         (async function loadGallery() {
+          const cachedPhotos = readCachedPhotos();
+          const hasCachedPhotos =
+            Array.isArray(cachedPhotos) && cachedPhotos.length > 0;
+
           setLoadingState(true);
+          if (hasCachedPhotos) {
+            renderGallery(cachedPhotos);
+            setLoadingState(false);
+          }
+
           try {
             const photos = await loadRemotePhotos();
             renderGallery(photos);
+            writeCachedPhotos(photos);
           } catch (error) {
-            renderGallery(fallbackPhotos);
-            console.error("Gallery fallback enabled:", error);
+            if (!hasCachedPhotos) {
+              renderGallery(fallbackPhotos);
+              console.error("Gallery fallback enabled:", error);
+            }
           } finally {
             setLoadingState(false);
           }
@@ -966,6 +1019,8 @@
         const timezone = String(
           hoursPanel.dataset.hoursTimezone || "America/Detroit",
         ).trim();
+        const hoursCacheKey = "storeHoursCacheV1";
+        const hoursCacheTtlMs = 30 * 60 * 1000;
         const dayNames = [
           "Sunday",
           "Monday",
@@ -1119,6 +1174,45 @@
           });
         }
 
+        function readCachedHours() {
+          try {
+            const raw = window.localStorage.getItem(hoursCacheKey);
+            if (!raw) return null;
+
+            const parsed = JSON.parse(raw);
+            if (
+              !parsed ||
+              !Array.isArray(parsed.days) ||
+              !Number.isFinite(parsed.savedAt)
+            ) {
+              return null;
+            }
+
+            if (Date.now() - parsed.savedAt > hoursCacheTtlMs) {
+              return null;
+            }
+
+            return parsed.days;
+          } catch (error) {
+            console.warn("Unable to read hours cache.", error);
+            return null;
+          }
+        }
+
+        function writeCachedHours(days) {
+          try {
+            window.localStorage.setItem(
+              hoursCacheKey,
+              JSON.stringify({
+                savedAt: Date.now(),
+                days: days,
+              }),
+            );
+          } catch (error) {
+            console.warn("Unable to write hours cache.", error);
+          }
+        }
+
         function renderHours(days) {
           const storeNow = getStoreNowParts();
           hoursList.innerHTML = "";
@@ -1233,13 +1327,25 @@
         }
 
         (async function initHours() {
+          const cachedHours = readCachedHours();
+          const hasCachedHours =
+            Array.isArray(cachedHours) && cachedHours.length > 0;
+
           setHoursLoadingState(true);
+          if (hasCachedHours) {
+            renderHours(cachedHours);
+            setHoursLoadingState(false);
+          }
+
           try {
             const liveDays = await loadRemoteHours();
             renderHours(liveDays);
+            writeCachedHours(liveDays);
           } catch (error) {
-            renderHours(buildFallbackDays());
-            console.error("Hours fallback enabled:", error);
+            if (!hasCachedHours) {
+              renderHours(buildFallbackDays());
+              console.error("Hours fallback enabled:", error);
+            }
           } finally {
             setHoursLoadingState(false);
           }
