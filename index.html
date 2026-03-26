@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="site-version" content="2026-03-26-1" />
     <title>Tri-City Trading Post | Fenton, MI Buyback Shop</title>
     <meta
       name="description"
@@ -694,6 +695,12 @@
         const carousel = document.querySelector(".carousel-thumbnails");
         const scroller = document.querySelector(".thumbnails__scroller");
         if (!galleryRoot || !carousel || !scroller) return;
+        const siteVersionMeta = document.querySelector(
+          'meta[name="site-version"]',
+        );
+        const siteVersion = siteVersionMeta
+          ? String(siteVersionMeta.content || "").trim() || "1"
+          : "1";
 
         const endpoint = (galleryRoot.dataset.galleryEndpoint || "").trim();
         const galleryLimitValue = String(
@@ -702,7 +709,7 @@
         const galleryLimit = galleryLimitValue
           ? Math.max(Number(galleryLimitValue) || 1, 1)
           : null;
-        const galleryCacheKey = "galleryPhotosCacheV1";
+        const galleryCacheKey = "galleryPhotosCache:" + siteVersion;
         const galleryCacheTtlMs = 6 * 60 * 60 * 1000;
         const fallbackPhotos = [
           {
@@ -1023,12 +1030,18 @@
         const statusEl = document.getElementById("hours-status");
         const hoursList = document.getElementById("hours-list");
         if (!hoursPanel || !hoursLoading || !statusEl || !hoursList) return;
+        const siteVersionMeta = document.querySelector(
+          'meta[name="site-version"]',
+        );
+        const siteVersion = siteVersionMeta
+          ? String(siteVersionMeta.content || "").trim() || "1"
+          : "1";
 
         const endpoint = String(hoursPanel.dataset.hoursEndpoint || "").trim();
         const timezone = String(
           hoursPanel.dataset.hoursTimezone || "America/Detroit",
         ).trim();
-        const hoursCacheKey = "storeHoursCacheV1";
+        const hoursCacheKey = "storeHoursCache:" + siteVersion;
         const hoursCacheTtlMs = 30 * 60 * 1000;
         const dayNames = [
           "Sunday",

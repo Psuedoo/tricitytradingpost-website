@@ -48,6 +48,14 @@ jobs:
           cp "${html_files[@]}" _site/
           cp styles.css robots.txt _site/
           cp -R assets _site/assets
+
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] || [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            deploy_version="${GITHUB_SHA::12}"
+            for file in _site/*.html; do
+              perl -0pi -e 's/<meta name="site-version" content="[^"]+" \/>/<meta name="site-version" content="'"${deploy_version}"'" \/>/' "$file"
+            done
+          fi
+
           touch _site/.nojekyll
 
       - name: Publish to gh-pages branch
