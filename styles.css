@@ -205,7 +205,9 @@ a {
 }
 
 .nav__links a.is-active,
-.mobile-menu a.is-active {
+.nav__links a[aria-current="page"],
+.mobile-menu a.is-active,
+.mobile-menu a[aria-current="page"] {
   color: #0f1419;
   background: var(--rust);
   border-color: var(--rust);
@@ -1347,11 +1349,13 @@ h2 {
     box-shadow: none;
   }
 
-  .nav__links a.is-active {
-    color: var(--rust);
+  .nav__links a.is-active,
+  .nav__links a[aria-current="page"] {
+    color: #f3c983;
     background: transparent;
     border-color: transparent;
     box-shadow: none;
+    font-weight: 700;
   }
 
   .split {
