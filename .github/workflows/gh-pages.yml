@@ -18,7 +18,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: gh-pages-publish
+  group: gh-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('prod-{0}', github.ref_name) }}
   cancel-in-progress: true
 
 jobs:
@@ -80,7 +80,9 @@ jobs:
           git init
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
 
+          has_gh_pages=false
           if git fetch --depth=1 origin gh-pages; then
+            has_gh_pages=true
             git checkout -B gh-pages FETCH_HEAD
           else
             git checkout --orphan gh-pages
@@ -111,7 +113,10 @@ jobs:
             cp -R "$WORKSPACE/_site/." .
             commit_message="Deploy site from ${REF_NAME}"
           elif [ "$EVENT_ACTION" = "closed" ]; then
-            ensure_root_site
+            if [ "$has_gh_pages" = false ]; then
+              echo "No gh-pages branch exists yet; nothing to clean up."
+              exit 0
+            fi
             rm -rf "pr-preview/pr-${PR_NUMBER}"
             commit_message="Remove PR preview #${PR_NUMBER}"
           else
