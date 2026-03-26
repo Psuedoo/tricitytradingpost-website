@@ -43,7 +43,7 @@
     <header class="hero hero--compact" id="top">
       <div class="hero__overlay"></div>
       <nav class="nav shell">
-        <a class="brand" href="index.html">Tri-City Trading Post</a>
+        <a class="brand" href="./">Tri-City Trading Post</a>
         <sl-dropdown
           id="mobile-menu"
           placement="bottom-end"
@@ -61,19 +61,25 @@
             <span></span>
           </button>
           <div class="mobile-menu">
-            <a href="index.html#about">About</a>
-            <a href="ebay.html">eBay Listings</a>
-            <a href="index.html#gallery">Gallery</a>
-            <a href="index.html#hours">Hours</a>
-            <a href="index.html#contact">Contact</a>
+            <a href="./">Home</a>
+            <a href="./#about">About</a>
+            <a href="gun-transfers.html">Gun Transfers</a>
+            <a class="is-active" href="ebay.html" aria-current="page"
+              >eBay Listings</a
+            >
+            <a href="./#hours">Hours</a>
+            <a href="./#contact">Contact</a>
           </div>
         </sl-dropdown>
         <div class="nav__links" id="site-nav">
-          <a href="index.html#about">About</a>
-          <a href="ebay.html">eBay Listings</a>
-          <a href="index.html#gallery">Gallery</a>
-          <a href="index.html#hours">Hours</a>
-          <a href="index.html#contact">Contact</a>
+          <a href="./">Home</a>
+          <a href="./#about">About</a>
+          <a href="gun-transfers.html">Gun Transfers</a>
+          <a class="is-active" href="ebay.html" aria-current="page"
+            >eBay Listings</a
+          >
+          <a href="./#hours">Hours</a>
+          <a href="./#contact">Contact</a>
         </div>
       </nav>
       <div class="hero__content shell">
@@ -91,28 +97,49 @@
       <section class="section shell listings-section">
         <sl-card class="listings-card">
           <div slot="header" class="listings-card__head">
-            <h2>Store Listings</h2>
+            <h2>Shop Our eBay Store</h2>
             <sl-button
               variant="primary"
-              href="https://www.ebay.com/usr/tctpmiki"
+              href="https://www.ebay.com/str/tricitytradingpost"
               target="_blank"
+              rel="noopener noreferrer"
               >Open on eBay</sl-button
             >
           </div>
-          <div class="listings-controls">
-            <sl-input
-              id="listing-search"
-              placeholder="Search listings by keyword..."
-              clearable
-            ></sl-input>
+          <div class="listings-static">
+            <p class="listings-lead">
+              Browse current inventory directly on our official eBay seller
+              page. We are linking out to eBay instead of showing live listings
+              here on the website.
+            </p>
+            <div class="listings-points">
+              <article class="listing-info-card">
+                <h3>See What Is Available</h3>
+                <p>
+                  View the latest active listings, photos, pricing, and item
+                  details directly on eBay.
+                </p>
+              </article>
+              <article class="listing-info-card">
+                <h3>Shop Through Our Seller Page</h3>
+                <p>
+                  Use our official store link for the most current inventory and
+                  the normal eBay checkout experience.
+                </p>
+              </article>
+            </div>
+            <p class="listings-note">
+              Looking for something specific? Call
+              <a href="tel:+18107501644">(810) 750-1644</a>
+              or visit our
+              <a
+                href="https://www.ebay.com/str/tricitytradingpost"
+                target="_blank"
+                rel="noopener noreferrer"
+                >eBay seller page</a
+              >.
+            </p>
           </div>
-          <div id="listings-grid" class="listings-grid"></div>
-          <div class="listings-pagination">
-            <sl-button id="page-prev" size="small">Previous</sl-button>
-            <span id="page-status">Page 1</span>
-            <sl-button id="page-next" size="small">Next</sl-button>
-          </div>
-          <p class="listings-note" id="listings-note">Loading listings...</p>
         </sl-card>
       </section>
     </main>
@@ -138,180 +165,6 @@
           link.addEventListener("click", function () {
             dropdown.hide();
           });
-        });
-      })();
-
-      (function initListings() {
-        const searchInput = document.getElementById("listing-search");
-        const grid = document.getElementById("listings-grid");
-        const prevButton = document.getElementById("page-prev");
-        const nextButton = document.getElementById("page-next");
-        const pageStatus = document.getElementById("page-status");
-        const note = document.getElementById("listings-note");
-        let allItems = [];
-        let filteredItems = [];
-        let currentPage = 1;
-        const pageSize = 12;
-
-        function renderPage() {
-          grid.innerHTML = "";
-          if (!filteredItems.length) {
-            if (!allItems.length) {
-              note.textContent =
-                "No products are available on our eBay page right now. Please check back soon.";
-            } else {
-              note.textContent = "No listings matched your search.";
-            }
-            pageStatus.textContent = "Page 0 of 0";
-            prevButton.disabled = true;
-            nextButton.disabled = true;
-            return;
-          }
-
-          const totalPages = Math.max(
-            1,
-            Math.ceil(filteredItems.length / pageSize),
-          );
-          currentPage = Math.min(currentPage, totalPages);
-          const start = (currentPage - 1) * pageSize;
-          const pageItems = filteredItems.slice(start, start + pageSize);
-
-          pageItems.forEach(function (item) {
-            const cardWrap = document.createElement("div");
-            cardWrap.innerHTML =
-              '<a class="listing-link" href="' +
-              item.url +
-              '" target="_blank" rel="noopener noreferrer">' +
-              '<sl-card class="listing-card">' +
-              '<img class="listing-card__img" src="' +
-              item.image +
-              '" alt="' +
-              item.title.replace(/"/g, "&quot;") +
-              '" loading="lazy">' +
-              '<div class="listing-card__body">' +
-              '<p class="listing-card__price">' +
-              item.price +
-              "</p>" +
-              '<p class="listing-card__title">' +
-              item.title +
-              "</p>" +
-              "</div>" +
-              "</sl-card>" +
-              "</a>";
-            grid.appendChild(cardWrap.firstChild);
-          });
-
-          note.textContent =
-            "Showing " +
-            pageItems.length +
-            " of " +
-            filteredItems.length +
-            " listing" +
-            (filteredItems.length === 1 ? "" : "s") +
-            ".";
-          pageStatus.textContent = "Page " + currentPage + " of " + totalPages;
-          prevButton.disabled = currentPage <= 1;
-          nextButton.disabled = currentPage >= totalPages;
-        }
-
-        function getFirstText(item, localName) {
-          const node = Array.from(item.children).find(function (child) {
-            return child.localName === localName;
-          });
-          return node ? node.textContent.trim() : "";
-        }
-
-        function getImageUrl(item) {
-          const enclosure = item.querySelector("enclosure[url]");
-          if (enclosure) {
-            return enclosure.getAttribute("url");
-          }
-          const mediaNode = Array.from(item.children).find(function (child) {
-            return child.localName === "content" && child.getAttribute("url");
-          });
-          if (mediaNode) {
-            return mediaNode.getAttribute("url");
-          }
-          const description = getFirstText(item, "description");
-          const match = description.match(/<img[^>]*src=["']([^"']+)["']/i);
-          return match ? match[1] : "";
-        }
-
-        function mapFeedItems(xmlText) {
-          const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-          const nodes = Array.from(xml.querySelectorAll("item"));
-          const seen = {};
-          return nodes
-            .map(function (node) {
-              const url = getFirstText(node, "link");
-              const title = getFirstText(node, "title") || "eBay listing";
-              const image = getImageUrl(node);
-              const price = getFirstText(node, "price") || "See listing";
-              return { url: url, title: title, image: image, price: price };
-            })
-            .filter(function (item) {
-              if (!item.url || seen[item.url]) {
-                return false;
-              }
-              seen[item.url] = true;
-              return true;
-            });
-        }
-
-        const sellerFeed =
-          "https://www.ebay.com/sch/i.html?_ssn=tctpmiki&LH_Sold=0&LH_Complete=0&_rss=1";
-        const proxiedFeed =
-          "https://api.allorigins.win/raw?url=" +
-          encodeURIComponent(sellerFeed);
-
-        fetch(proxiedFeed)
-          .then(function (res) {
-            return res.text();
-          })
-          .then(function (xmlText) {
-            allItems = mapFeedItems(xmlText);
-            filteredItems = allItems.slice();
-            currentPage = 1;
-            renderPage();
-          })
-          .catch(function () {
-            note.textContent =
-              "Unable to fetch live listings right now. Please use the Open on eBay button above.";
-          });
-
-        prevButton.addEventListener("click", function () {
-          if (currentPage > 1) {
-            currentPage -= 1;
-            renderPage();
-          }
-        });
-
-        nextButton.addEventListener("click", function () {
-          const totalPages = Math.max(
-            1,
-            Math.ceil(filteredItems.length / pageSize),
-          );
-          if (currentPage < totalPages) {
-            currentPage += 1;
-            renderPage();
-          }
-        });
-
-        searchInput.addEventListener("sl-input", function (event) {
-          const term = String(event.target.value || "")
-            .trim()
-            .toLowerCase();
-          if (!term) {
-            filteredItems = allItems.slice();
-            currentPage = 1;
-            renderPage();
-            return;
-          }
-          filteredItems = allItems.filter(function (item) {
-            return item.title.toLowerCase().indexOf(term) !== -1;
-          });
-          currentPage = 1;
-          renderPage();
         });
       })();
 

@@ -39,7 +39,14 @@ jobs:
           set -euo pipefail
 
           mkdir -p _site
-          cp index.html ebay.html styles.css robots.txt _site/
+          shopt -s nullglob
+          html_files=( *.html )
+          if [ "${#html_files[@]}" -eq 0 ]; then
+            echo "No HTML files found at repository root."
+            exit 1
+          fi
+          cp "${html_files[@]}" _site/
+          cp styles.css robots.txt _site/
           cp -R assets _site/assets
           touch _site/.nojekyll
 
@@ -79,7 +86,14 @@ jobs:
             fi
 
             bootstrap_dir="$(mktemp -d)"
-            git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- index.html ebay.html styles.css robots.txt assets
+            mapfile -t root_html_files < <(
+              git --git-dir="$WORKSPACE/.git" ls-tree --name-only "origin/${DEFAULT_BRANCH}" | grep -E '\.html$' || true
+            )
+            if [ "${#root_html_files[@]}" -eq 0 ]; then
+              echo "No HTML files found on origin/${DEFAULT_BRANCH}."
+              exit 1
+            fi
+            git --git-dir="$WORKSPACE/.git" --work-tree="$bootstrap_dir" checkout "origin/${DEFAULT_BRANCH}" -- "${root_html_files[@]}" styles.css robots.txt assets
             cp -R "$bootstrap_dir/." .
             touch .nojekyll
           }

@@ -188,6 +188,28 @@ a {
   padding: 0.45rem 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.nav__links a:hover,
+.nav__links a:focus-visible,
+.mobile-menu a:hover,
+.mobile-menu a:focus-visible {
+  color: #fff;
+  background: rgba(194, 161, 107, 0.18);
+  border-color: rgba(194, 161, 107, 0.5);
+}
+
+.nav__links a.is-active,
+.mobile-menu a.is-active {
+  color: #0f1419;
+  background: var(--rust);
+  border-color: var(--rust);
+  box-shadow: 0 0 0 1px rgba(15, 20, 25, 0.08);
 }
 
 .menu-toggle {
@@ -483,6 +505,269 @@ h2 {
   margin: 0;
   color: var(--ink-soft);
   max-width: 32ch;
+}
+
+.compare-head {
+  max-width: 72ch;
+}
+
+.compare-head h2 {
+  margin-bottom: 0.55rem;
+}
+
+.compare-head p {
+  margin-top: 0;
+  color: var(--ink-soft);
+}
+
+.compare-head p + p {
+  margin-top: 0.85rem;
+}
+
+.compare-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.compare-card {
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  padding: 1rem;
+  background: linear-gradient(180deg, #252525 0%, #1a1a1a 100%);
+  box-shadow: 0 10px 20px var(--shadow);
+}
+
+.compare-card h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+}
+
+.compare-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--ink-soft);
+}
+
+.compare-card--pawn {
+  border-color: rgba(122, 106, 79, 0.34);
+}
+
+.compare-card--buyback {
+  border-color: rgba(194, 161, 107, 0.34);
+}
+
+.transfer {
+  align-items: start;
+}
+
+.transfer p {
+  color: var(--ink-soft);
+}
+
+.transfer-card {
+  border-color: rgba(194, 161, 107, 0.24);
+}
+
+.transfer-card h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1.12rem;
+  letter-spacing: 0.06em;
+}
+
+.transfer-card ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.48rem;
+  color: var(--ink-soft);
+}
+
+.transfer-note {
+  margin: 0.8rem 0 0;
+  color: var(--canvas);
+  font-weight: 600;
+}
+
+.transfer-details {
+  margin-top: 1rem;
+}
+
+.transfer-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.transfer-detail-card h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.transfer-detail-card p {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+}
+
+.transfer-detail-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--ink-soft);
+}
+
+.transfer-detail-card--fees {
+  border-color: rgba(194, 161, 107, 0.3);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.transfer-fee-box {
+  border: 1px solid rgba(194, 161, 107, 0.24);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.015);
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.transfer-fee-heading {
+  margin: 0;
+  color: var(--canvas);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.92rem;
+}
+
+.transfer-fee-note {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.transfer-fee-item {
+  margin-top: 0.1rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed rgba(194, 161, 107, 0.22);
+}
+
+.transfer-fee-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.transfer-fee-label {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.transfer-fee-price {
+  color: var(--canvas);
+  white-space: nowrap;
+}
+
+.transfer-fee-detail {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+}
+
+.transfer-fee-final-note {
+  margin: 0;
+  color: var(--canvas);
+  font-weight: 600;
+}
+
+.what-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.what-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.what-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.faq-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.faq-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.faq-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.area {
+  max-width: 78ch;
+}
+
+.area p {
+  color: var(--ink-soft);
+}
+
+.area-list {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.area-list span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.28rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(194, 161, 107, 0.32);
+  background: rgba(194, 161, 107, 0.1);
+  color: var(--canvas);
+  font-family: "Rajdhani", "Arial Narrow", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.trust-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.trust-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.trust-card p {
+  margin: 0;
+  color: var(--ink-soft);
 }
 
 .carousel-thumbnails {
@@ -929,78 +1214,48 @@ h2 {
   font-size: 1.4rem;
 }
 
-.listings-controls {
-  margin-bottom: 0.8rem;
+.listings-static {
+  display: grid;
+  gap: 1rem;
 }
 
-.listings-grid {
+.listings-lead {
+  margin: 0;
+  color: var(--canvas);
+  font-size: 1.02rem;
+}
+
+.listings-points {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.7rem;
+  gap: 0.85rem;
 }
 
-.listings-pagination {
-  margin-top: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-#page-status {
-  font-size: 0.95rem;
-  color: var(--ink-soft);
-}
-
-.listing-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.listing-card::part(base) {
-  border-radius: 0.85rem;
+.listing-info-card {
   border: 1px solid rgba(194, 161, 107, 0.14);
+  border-radius: 0.85rem;
   background: linear-gradient(180deg, #272727 0%, #1b1b1b 100%);
+  padding: 1rem 1rem 1.05rem;
   box-shadow: 0 10px 20px var(--shadow);
 }
 
-.listing-card__img {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  display: block;
-  border-top-left-radius: 0.8rem;
-  border-top-right-radius: 0.8rem;
-  background: #1a1a1a;
+.listing-info-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
 }
 
-.listing-card__body {
-  padding: 0.7rem 0.8rem 0.85rem;
-}
-
-.listing-card__price {
+.listing-info-card p {
   margin: 0;
-  font-weight: 700;
-  color: var(--rust);
-  font-family: "Rajdhani", "Arial Narrow", sans-serif;
-  letter-spacing: 0.04em;
-}
-
-.listing-card__title {
-  margin: 0.35rem 0 0;
-  color: var(--canvas);
-  font-size: 0.92rem;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  color: var(--ink-soft);
 }
 
 .listings-note {
-  margin: 0.75rem 0 0;
+  margin: 0;
+  display: flex;
   color: var(--ink-soft);
   font-size: 0.92rem;
+  flex-wrap: wrap;
+  gap: 0.3rem;
 }
 
 @media (max-width: 759px) {
@@ -1084,6 +1339,21 @@ h2 {
     padding: 0;
   }
 
+  .nav__links a:hover,
+  .nav__links a:focus-visible {
+    color: var(--rust);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .nav__links a.is-active {
+    color: var(--rust);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
   .split {
     grid-template-columns: 1.2fr 1fr;
     gap: 1.5rem;
@@ -1111,6 +1381,40 @@ h2 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .what-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .compare-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transfer-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transfer-detail-card--before-buy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .transfer-detail-card--checklist {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .transfer-detail-card--fees {
+    grid-column: 1 / -1;
+  }
+
+  .faq-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hours-panel {
     padding: 1.5rem 1.35rem;
   }
@@ -1121,18 +1425,12 @@ h2 {
     align-items: center;
   }
 
-  .listings-grid {
+  .listings-points {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .map-section {
     grid-template-columns: 0.85fr 1.15fr;
     gap: 1.2rem;
-  }
-}
-
-@media (min-width: 1080px) {
-  .listings-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
