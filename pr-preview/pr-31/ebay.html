@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="site-version" content="2026-03-26-1" />
+    <title>Tri-City Trading Post | eBay Listings</title>
+    <meta
+      name="description"
+      content="Browse Tri-City Trading Post eBay listings."
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/favicon/favicon-16x16.png"
+    />
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any" />
+    <link rel="manifest" href="assets/favicon/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Oswald:wght@500;600;700&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero hero--compact" id="top">
+      <div class="hero__overlay"></div>
+      <nav class="nav shell">
+        <a class="brand" href="./">Tri-City Trading Post</a>
+        <sl-dropdown
+          id="mobile-menu"
+          placement="bottom-end"
+          class="mobile-menu-dropdown"
+          distance="4"
+        >
+          <button
+            class="menu-toggle"
+            slot="trigger"
+            type="button"
+            aria-label="Open navigation menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="mobile-menu">
+            <a href="./">Home</a>
+            <a href="./#about">About</a>
+            <a href="gun-transfers.html">Gun Transfers</a>
+            <a class="is-active" href="ebay.html" aria-current="page"
+              >eBay Listings</a
+            >
+            <a href="./#hours">Hours</a>
+            <a href="./#contact">Contact</a>
+          </div>
+        </sl-dropdown>
+        <div class="nav__links" id="site-nav">
+          <a href="./">Home</a>
+          <a href="./#about">About</a>
+          <a href="gun-transfers.html">Gun Transfers</a>
+          <a class="is-active" href="ebay.html" aria-current="page"
+            >eBay Listings</a
+          >
+          <a href="./#hours">Hours</a>
+          <a href="./#contact">Contact</a>
+        </div>
+      </nav>
+      <div class="hero__content shell">
+        <div class="hero__copy">
+          <p class="kicker">Shop Online</p>
+          <h1>Tri-City Trading Post eBay Listings</h1>
+          <p class="hero__lead">
+            Browse current listings from our official eBay seller page.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section shell listings-section">
+        <sl-card class="listings-card">
+          <div slot="header" class="listings-card__head">
+            <h2>Shop Our eBay Store</h2>
+            <sl-button
+              variant="primary"
+              href="https://www.ebay.com/str/tricitytradingpost"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Open on eBay</sl-button
+            >
+          </div>
+          <div class="listings-static">
+            <p class="listings-lead">
+              Browse current inventory directly on our official eBay seller
+              page. We are linking out to eBay instead of showing live listings
+              here on the website.
+            </p>
+            <div class="listings-points">
+              <article class="listing-info-card">
+                <h3>See What Is Available</h3>
+                <p>
+                  View the latest active listings, photos, pricing, and item
+                  details directly on eBay.
+                </p>
+              </article>
+              <article class="listing-info-card">
+                <h3>Shop Through Our Seller Page</h3>
+                <p>
+                  Use our official store link for the most current inventory and
+                  the normal eBay checkout experience.
+                </p>
+              </article>
+            </div>
+            <p class="listings-note">
+              Looking for something specific? Call
+              <a href="tel:+18107501644">(810) 750-1644</a>
+              or visit our
+              <a
+                href="https://www.ebay.com/str/tricitytradingpost"
+                target="_blank"
+                rel="noopener noreferrer"
+                >eBay seller page</a
+              >.
+            </p>
+          </div>
+        </sl-card>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer__inner">
+        <p>Tri-City Trading Post | Fenton, MI</p>
+        <p id="copyright"></p>
+      </div>
+    </footer>
+
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"
+    ></script>
+    <script src="assets/js/preview-notice.js"></script>
+    <script>
+      (function initMobileMenu() {
+        var dropdown = document.getElementById("mobile-menu");
+        if (!dropdown) return;
+
+        dropdown.querySelectorAll(".mobile-menu a").forEach(function (link) {
+          link.addEventListener("click", function () {
+            dropdown.hide();
+          });
+        });
+      })();
+
+      document.getElementById("copyright").textContent =
+        "Copyright " +
+        new Date().getFullYear() +
+        " Tri-City Trading Post. All rights reserved.";
+    </script>
+  </body>
+</html>
